@@ -74,7 +74,7 @@
 \title{Nummerical Integration Using Gaussian Quadrature and Monte Carlo Method } % Article title
 
 \author{%
-\textsc{Andreas Fagerheim}\thanks{\url{https://github.com/AndreasFagerheim/Fys4150}} \\[1ex] % Your name
+\textsc{Andreas Fagerheim}\thanks{\url{https://github.com/AndreasFagerheim/Project-3.1}} \\[1ex] % Your name
 \normalsize Department of Physics, University of Oslo, Norway \\ % Your institution
 %\normalsize \href{mailto:john@smith.com}{john@smith.com} % Your email address
 %\and % Uncomment if 2 authors are required, duplicate these 4 lines if more
@@ -91,7 +91,7 @@
 This article set forth to integrate a six-dimensional integral which is 
 used to determine the ground state
 correlation energy between two electrons in a helium atom.  The
-integral appears in many quantum mechanical applications. We will first solve the integral through a brute force manner using Gauss Quadrature (Gauss-Legendre) and Monte Carlo method. By changing coordinate frame and choosing a better suited probability distribution function (PDF) we implemented improved methods respectively Gauss-Laguerre and Monte Carlo with Importance Sampling. This article will show that by doing these implementations of improvement we can get better precision off our numerical methods for integration.
+integral appears in many quantum mechanical applications. We will first solve the integral through a brute force manner using Gauss Quadrature (Gauss-Legendre) and Monte Carlo method. By changing coordinate frame and choosing a better suited probability distribution function (PDF) we implemented improved methods respectively Gauss-Laguerre and Monte Carlo with Importance Sampling. This article will show that by doing these implementations of improvement we can get better precision off our numerical methods for integration. All programs developed and used are available in the github link in the footnote.
 
 
 \end{abstract}
@@ -109,9 +109,9 @@ integral appears in many quantum mechanical applications. We will first solve th
 %----------------------------------------------------------------------------------------
 
 \section{Introduction}
-Numerical integration is of great importance for the scientific world. Not all integrals can be solved analytically and we must therefore find other methods for solving them. There are many aspects in implementations of numerical methods and each method comes with its drawbacks and at the same time some strengths. In this article we will set forth to look closer on four such methods. Throughout the article the concepts and methods discussed will have its foothold from Computational Physics \cite{Hjorth-Jensen:2015dg}.
+Numerical integration is of great importance for the scientific world. Not all integrals can be solved analytically and we must therefore find other methods for solving them. There are many aspects in implementations of numerical methods and each method comes with its drawbacks and at the same time some strengths. In this article we will set forth to look closer on four such methods. Throughout the article the concepts and methods discussed will have its foothold from Computational Physics \cite{Hjorth-Jensen:2015dg}. 
 
-We will first set the framework for the physical problem we are solving and the integrals we are interested in solving. Thereafter implementation of our methods Gauss-Legendre, Gauss-Laguerre, brute force Monte Carlo and Monte Carlo with Importance sampling. Following the methods section is our results of the methods evaluating the integral. Last we will form a conclusion of our findings.
+We will first set the framework for the physical problem we are solving and the integrals we are interested in solving. Thereafter implementation of our methods Gauss-Legendre, Gauss-Laguerre, brute force Monte Carlo and Monte Carlo with Importance sampling. Following the methods section is our results of the methods evaluating the integral. Last we will form a conclusion of our findings. 
 \section{Theory}
 
 %\lettrine[nindent=0em,lines=3]{W} 
