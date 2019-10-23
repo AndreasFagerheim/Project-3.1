@@ -1,0 +1,8 @@
+Exact value of integration: 0.192766
+
+Integrating using brute force Monte Carlo with N samples
+------------------------------------------------------------
+Numerical value       variance         N      Time
+
+0.197257             0.03705         100000    0.0396
+0.136952             0.01793        1000000      0.34

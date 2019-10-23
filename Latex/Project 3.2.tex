@@ -1,0 +1,437 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 1.4 (15/5/16)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com) with extensive modifications by
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[twoside,twocolumn]{article}
+
+%\usepackage{booktabs,caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{graphicx}
+\usepackage{blindtext} % Package to generate dummy text throughout this template 
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[english]{babel} % Language hyphenation and typographical rules
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt, left= 2.35cm, right = 2.35cm, footskip = 2cm]{geometry} % Document margins
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+
+\usepackage{enumitem} % Customized lists
+\setlist[itemize]{noitemsep} % Make itemize lists more compact
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\roman{subsection}} % roman numerals for subsections
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+%\fancyhead[C]{Running title $\bullet$ May 2016 $\bullet$ Vol. XXI, No. 1} % Custom header text
+\fancyfoot[RO,RE]{\thepage} % Custom footer text
+
+\usepackage{titling} % Customizing the title section
+
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\setlength{\droptitle}{-4\baselineskip} % Move the title up
+
+\pretitle{\begin{center}\huge\bfseries} % Article title formatting
+\posttitle{\end{center}} % Article title closing formatting
+\title{Nummerical Integration Using Gaussian Quadrature and Monte Carlo Method } % Article title
+
+\author{%
+\textsc{Andreas Fagerheim}\thanks{\url{https://github.com/AndreasFagerheim/Fys4150}} \\[1ex] % Your name
+\normalsize Department of Physics, University of Oslo, Norway \\ % Your institution
+%\normalsize \href{mailto:john@smith.com}{john@smith.com} % Your email address
+%\and % Uncomment if 2 authors are required, duplicate these 4 lines if more
+%\textsc{Jane Smith}\thanks{Corresponding author} \\[1ex] % Second author's name
+%\normalsize University of Utah \\ % Second author's institution
+%\normalsize \href{mailto:jane@smith.com}{jane@smith.com} % Second author's email address
+}
+\date{\today} % Leave empty to omit a date
+
+%---------------------------------------------------------------------------------------
+\renewcommand{\maketitlehookd}{%
+\begin{abstract}
+
+This article set forth to integrate a six-dimensional integral which is 
+used to determine the ground state
+correlation energy between two electrons in a helium atom.  The
+integral appears in many quantum mechanical applications. We will first solve the integral through a brute force manner using Gauss Quadrature (Gauss-Legendre) and Monte Carlo method. By changing coordinate frame and choosing a better suited probability distribution function (PDF) we implemented improved methods respectively Gauss-Laguerre and Monte Carlo with Importance Sampling. This article will show that by doing these implementations of improvement we can get better precision off our numerical methods for integration.
+
+
+\end{abstract}
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+% Print the title
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\section{Introduction}
+Numerical integration is of great importance for the scientific world. Not all integrals can be solved analytically and we must therefore find other methods for solving them. There are many aspects in implementations of numerical methods and each method comes with its drawbacks and at the same time some strengths. In this article we will set forth to look closer on four such methods. Throughout the article the concepts and methods discussed will have its foothold from Computational Physics \cite{Hjorth-Jensen:2015dg}.
+
+We will first set the framework for the physical problem we are solving and the integrals we are interested in solving. Thereafter implementation of our methods Gauss-Legendre, Gauss-Laguerre, brute force Monte Carlo and Monte Carlo with Importance sampling. Following the methods section is our results of the methods evaluating the integral. Last we will form a conclusion of our findings.
+\section{Introduction/Theory}
+
+%\lettrine[nindent=0em,lines=3]{W} 
+The wave function of each electron can be assumed to be modelled like
+the single-particle wave function of an electron in the hydrogen
+atom. The single-particle wave function for an electron $i$ in the
+$1s$ state can the be modelled by:
+
+
+
+\begin{equation}
+		\psi_{1s}({\bf r}_i)  =   e^{-\alpha r_i}.
+\end{equation}
+The parameter $\alpha$ is connected to the charge of the atom and will in our case be set to equal 2 to correspond to the helium atom $Z = 2$. Furthermore $r_i$ is the magnitude of the position vector ${\bf r}_i$ and is given by
+\[
+r_i = \sqrt{x_i^2+y_i^2+z_i^2}.
+\]
+and
+\[
+   {\bf r}_i =  x_i {\bf e}_x + y_i {\bf e}_y +z_i {\bf e}_z ,
+\]
+The ansatz for the wave function for two electrons is then given by the product of two 
+so-called 
+$1s$ wave functions as 
+\[
+   \Psi({\bf r}_1,{\bf r}_2)  =   e^{-\alpha (r_1+r_2)}.
+\]
+
+Note that it is not possible to find a closed-form or analytical
+solution to Schr\"odinger's equation for two interacting electrons in
+the helium atom.
+
+The integral we need to solve is the quantum mechanical expectation
+value of the correlation energy between two electrons which repel each
+other via the classical Coulomb interaction, namely
+
+\begin{equation} \label{integral}
+   \langle \frac{1}{|{\bf r}_1-{\bf r}_2|} \rangle=\int_{-\infty}^{\infty} d{\bf r}_1d{\bf r}_2  e^{-2\alpha (r_1+r_2)}\frac{1}{|{\bf r}_1-{\bf r}_2|}.
+\end{equation}
+
+Note that our wave function is not normalized, but we dont nedd to worry about this.
+
+This integral can be solved in closed form and the answer is
+$5\pi^2/16^2$.
+This integral can be rewritten in to spherical coordinates by change of variables. We are then only left with 2 infinite integrals. The Laguerre
+polynomials are defined for $x\in [0,\infty)$ and we change to
+spherical coordinates
+
+\[
+   d{\bf r}_1d{\bf r}_2  = r_1^2dr_1 r_2^2dr_2 dcos(\theta_1)dcos(\theta_2)d\phi_1d\phi_2 
+\]
+want to integrate over $d\theta_i" $instead of $d\cos(\theta_i)$ and use that $d\cos(\theta_i) = sin(\theta_i)d\theta_i$ to ge
+\[
+= r_1^2dr_1 r_2^2dr_2 sin(\theta_1)sin(\theta_2)d\theta_1d\theta_2d\phi_1d\phi_2
+\]
+
+with
+
+\[
+   \frac{1}{r_{12}}= \frac{1}{\sqrt{r_1^2+r_2^2-2r_1r_2cos(\beta)}}
+\]
+
+and 
+
+\[
+cos(\beta) = cos(\theta_1)cos(\theta_2)+sin(\theta_1)sin(\theta_2)cos(\phi_1-\phi_2)).
+\]
+
+This leads to the intgral in speherical coordinates
+\begin{equation}
+	\langle \frac{1}{{r_{12}}} \rangle=\int d\lambda  r_1^2r_2^2sin(\theta_1)sin(\theta_2)e^{-2\alpha (r_1+r_2)}\frac{1}{r_{12}}
+\end{equation}
+where we used $d\lambda  =dr_1 dr_2d\theta_1\theta_2d\phi_1d\phi_2$. Next making the substitution $4r_1 = u"$ og $4r_2 = v"$ where we use that $\alpha = 2$ we get
+
+\begin{equation}
+	\frac{1}{(2\alpha)^5}\int d\tilde{\lambda}  \frac{sin(\theta_1)sin(\theta_2)  u^2v^2e^{-(u+v)}}{\sqrt{u^2+v^2-2uv \cdot cos(\beta)}}
+\end{equation} 
+where  $\tilde{d\lambda}  =du dvd\theta_1\theta_2d\phi_1d\phi_2$
+
+%------------------------------------------------
+
+\section{Methods}
+The integral will be solved using four numerical methods. First numerical integration method  we set forth to explore is the Gaussian Quadrature which concept is to make use of a weight function $W(x)$ to give more emphasis to one part of the interval we integrate over than another. The basic idea behind this method is to approximate the integral
+\begin{equation}
+   I = \int_{a}^{b}f(x)dx = \int_{a}^{b} W(x)g(x) dx \approx\sum_{i=1}^{N} w_ig(x_i)
+\end{equation}
+Where $w_i$ is the weights and obtained through orthogonal polynomials. These polynomials are orthogonal in some interval $[a,b]$ and the points $x_i$ is constrained to lie in this interval. Different weight functions, $W(x)$ gives rise to different methods and we will look  closer at Gaussian-Legendre ($W(x) = 1$) and Gaussian-Laguerre ($W(x)  = x^\alpha e^{-x}$). These weight functions get their polynomials from the intervals $[-1,1]$ and $[0,\infty\rangle$. The integral (\ref{integral})
+we are working to solve has the limits $x\in[-\infty,\infty]$ and therefore need to rewrite the integral for to be in the right limits. By changing variable
+\begin{equation}
+		t= \frac{b-a}{2}x + \frac{b+a}{2}
+\end{equation}
+we can do this
+\begin{equation}
+		\int_a^b f(x) dx = \frac{b-a}{2} \int_{-1}^1f( \frac{b-a}{2}x + \frac{b+a}{2})
+\end{equation}
+
+Further we have to adjust for that (5) is for only one dimension. The numerical methods will have to sum over 6 dimensions and this will be made by a number of foor-loops equal to the umber of dimensions. Under shows the idea of the implemented program used. 
+
+\begin{figure}[h]
+\center
+%\caption{Code snippet of how the summation over 6 dimensions is implemented
+\includegraphics[scale=0.4]{foor.png}
+
+\end{figure}
+where \textit{int functions()} is the integral we want to evaluate and typically will bee on the form (2) and (4).
+
+
+\subsection{Gauss-Legendre Quadrature}
+
+
+The Gauss-Legendre method uses the weight function $W(x) = 1$ and from (5) we then want to solve the integral 
+
+\begin{equation}ß
+   I = \int_{-1}^{1}f(x)dx \approx\sum_{i=1}^{N} w_ig(x_i)
+\end{equation}
+
+The integral we have (3) have limits $x\in[-\infty,\infty]$ and we can change these limits with the use of above mentioned variable change (6). By plotting the wave function for for a single particle we can narrow down our limits from $x\in[-\infty,\infty]$ to a finite interval $x\in[a,b]$. Looking at \textbf{Figure 1} we see that the single particle wave function is close to zero at $x = \pm2$. 
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.55]{figure1.png}
+\caption{Plot of the single particle wave function to find appropiate limits}
+\end{figure}
+
+The functions \textit{gaussLegendre (called gauleg at github library)} and \textit{gammln} are copied from Hjort-Jensens github repository \footnote{https://github.com/CompPhysics/ComputationalPhysics/blob/master/doc/Programs/LecturePrograms/programs/cppLibrary/lib.cpp}. These functions returns our mesh points and weights that we want to use.
+
+
+\subsection{Gauss-Laguerre Quadrature}
+
+The Gauss-Laguerre uses the weihgt function $W(x)  = x^\alpha e^{-x}$. Where its associated polynomials are orthogonal in the interval $x\in[0,\infty]$ and are called Laguerre polynomials. Our rewritten integral in spherical coordinates lets us easily factor out the weight function $u^2v^2 e^-{u+v}$ and from (4) the integrand becomes
+\begin{equation}
+sin(\theta_1)sin(\theta_2)\frac{1}{\sqrt{u^2+v^2-2uv \cdot cos(\beta)}}
+\end{equation}
+
+The calls below shows how we set the radial part of the integrat to be solved with Laguerre polynimials and the angular parts with Legendre polynomials.
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.55]{Laguerre.png}
+\caption{Code snippet of programs that sets upt the weights and mesh points}
+\end{figure}
+
+We use the change of variable to integrate over the wanted limits $x\in[0,\infty]$
+\begin{equation}
+	\tilde{x}_i = tan(\frac{\pi}{4}(1+x_i)
+\end{equation}
+and
+\begin{equation}
+	\tilde{w}_i = \frac{\pi}{4}\frac{w_i}{cos^2({\frac{\pi}{2}(1+x_i)})}
+\end{equation}
+where $w_i$ and$x_i$ are the original weights and mesh points in the interval [-1,1], while $\tilde{w}_i$ and $\tilde{x}_i$ are the new weights and mesh points in the interval $[0,\infty\rangle$.
+
+\subsection{Monte Carlo brute force}
+
+The basic idea behind Monte Carlo methods is to evaluate some function in a random point given by probability distribution functions then sum all off the values and divide by number of samples made. The integral can be approximated by
+\begin{equation}
+I = \langle f \rangle = \int_{0}^{1}f(x)p(x)dx \approx \frac{1}{N}\sum_{i=1}^{N} f(x_i)p(x_i)
+\end{equation}
+The simplest form of distribution is the uniform distribution which generates numbers $x\in [0,1]$. We therefore need our integral to go over the limits $[0,1]$ This can be done by variable change
+
+\begin{equation}
+z_i = a + (b-a) x_i)
+\end{equation}
+
+This is simply implemented in the code where $x_i$ is generated by \textit{ran 0} which return a random number between 0 and 1. We then calculate the integrand which will correspond to (2) and the same as used in Gauss-Legendre method.
+\begin{figure}[h]
+\center
+\caption{Code snippet of how the variable change occur in the program where we see $x_i$ is a random number given by the function \textit{ran 0}}
+\includegraphics[scale=0.55]{var.png}
+
+\end{figure}
+\\
+\\
+\\
+\\
+\\
+\begin{figure}[h]
+\center
+\caption{Code snippet of how the variable change occur in the program where we see $x_i$ is a random number given by the function \textit{ran 0}}
+\includegraphics[scale=0.55]{var.png}
+
+\end{figure}
+When we make the change of variable we also get the jacobideterminnant which is in this case will correspond to the volume we integrate over. The jacobi determinant is given by
+
+\begin{equation}
+ \prod\limits_{i=0}^D (a_i - b_i).
+\end{equation}
+
+Further when using Monte Carlo methods we make use of the statistical error variance $\sigma^2$ for evaluating the precision. This tells us to which extent $f$ deviates from its average over the integration region and is given by
+\begin{equation} 
+	\sigma^2	= \langle f^2\rangle -{\langle f \rangle}^2
+\end{equation}
+The function \textit{ran0}  are copied from Hjort-Jensens github repository \footnote{https://github.com/CompPhysics/ComputationalPhysics/blob/master/doc/Programs/LecturePrograms/programs/cppLibrary/lib.cpp}. This function gives us the ability to generate random numbers in the limit $[0,1]$.
+\subsection{Monte Carlo method improved}
+
+The idea is to make a variable change of our integrand so that we can make use of a PDF which makes the method converge faster towards an answer. By making the variable change to spherical coordinates (4) as earlier we can achieve this. The general integral transform 
+\[
+I =\int_{a}^{b}F(x)dx = \int_{a}^{b}p(x)\frac{F(x)}{p(x)}dx\approx \int_{\tilde{a}}^{\tilde{b}}p(x)\frac{F(x)}{p(x)}dx
+\]
+
+\begin{equation}
+\int_{\tilde{a}}^{\tilde{b}}p(x)\frac{F(x)}{p(x)}dx\approx \frac{1}{N}\sum_{i=1}^{N} \frac{ F(x(y_i))}{p(x(y_i))}
+\end{equation}
+The rewritten integral (4) makes lets us factor out $e^{-u}$ and $e^{-v}$ and this motivates use of a exponential probability distribution. The variable change is done by $u_i = -ln(1-x_i)$ and $u_i = -ln(1-x_i)$ which sets up the integral to go over $[0,\infty$] . While $ \theta \in [0,\pi], \phi \in [0,2\pi]$.
+
+\begin{figure}[h]
+\center
+\caption{Code snippet of how the variable change with the exponential PFD occur in the program where we see $x_i$ is a random number given by the function \textit{ran 0}}
+\includegraphics[scale=0.55]{var2.png}
+
+\end{figure}
+
+
+%------------------------------------------------
+
+\section{Results}
+
+
+\subsection{Gauss-Legendre Quadrature}
+The implemented Gauss-Legendre Quadrature method yields the results given in \textbf{Table 1} when used to solve (\ref{integral}). With $N=35$ the relative error is at its lowest, but is still $1.7 \%$. For $N >25$ this method also becomes time consuming where it for N = 40 takes 11 minutes to produce a relative error of $2.1 \%$.
+
+
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|c|c|}
+\hline
+N  & Integral & \multicolumn{1}{l|}{Relative error} & Time      \\ \hline
+5  & 0.354602 & 0.8395                              & 0.00248 s \\ \hline
+10 & 0.129834 & 0.3265                              & 0.156 s   \\ \hline
+15 & 0.199475 & 0.0348                              & 1.82 s    \\ \hline
+20 & 0.177065 & 0.08145                             & 10.6 s    \\ \hline
+25 & 0.18911  & 0.01897                             & 38.8 s    \\ \hline
+30 & 0.185796 & 0.03616                             & 116 s     \\ \hline
+35 & 0.189387 & 0.01753                             & 294 s     \\ \hline
+40 & 0.188867 & 0.02125                             & 654 s     \\ \hline
+\end{tabular}
+\caption{Results from using Gauss-Legendre Quadrature for calculating the integral with an exact solution equal to $0.192766$}
+\end{table}
+\ \
+ \\
+ \\
+%------------------------------------------------
+
+
+\subsection{Gauss-Laguerre Quadrature}
+This result from integrating with Gauss-Laguerre Quadrature method is shown in\textbf{Table 2}. This method converges faster towards the exact value  $0.192766$. And with N = 25 we have a precision of 3 digits equal to the exact answer. Time used compared to Gauss-Legendre is not so different. Gauss-Laguerre can be said to outperform Gausse-Legendre on precision where it already at N = 15 has better precision than GL at any N.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|c|c|}
+\hline
+N  & Integral & \multicolumn{1}{l|}{Relative error} & Time      \\ \hline
+5  & 0.17345  & 0.1002                              & 0.00447 s \\ \hline
+10 & 0.18645  & 0.03273                             & 0.173 s   \\ \hline
+15 & 0.18975  & 0.0156                              & 1.93 s    \\ \hline
+20 & 0.19108  & 0.008738                            & 10.7 s    \\ \hline
+25 & 0.19174  & 0.005322                            & 41.2 s    \\ \hline
+30 & 0.192113 & 0.003386                            & 125 s     \\ \hline
+35 & 0.19234& 0.002914                           & 309 s     \\ \hline
+40 & 0.192496 & 0.001415                             & 690 s     \\ \hline
+\end{tabular}
+\caption{Results from using Gauss-Laguerre Quadrature for calculating the integral with an exact solution equal to $0.192766$}
+\end{table}
+\subsection{Monte Carlo brute force}
+Integrating numerically using brute force Monte Carlo method yields the results shown in \textbf{Table 3}. Here the results fluctuates where its closer at $N = 10^5$ than for nome higher values of N. This makes little sense and makes it harder to compare the reults to the other methods. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|c|c|}
+\hline
+N                     & Integral & \multicolumn{1}{l|}{Variance} & Time(s)  \\ \hline
+$10^5$ & 0.19726  & 0.03705                       & 0.0392 s \\ \hline
+$10^6$ & 0.13695  & 0.01793                       & 0.342 s  \\ \hline
+$10^7$ & 0.16192  & 0.01744                       & 3.59 s   \\ \hline
+$10^8$ &0.19467  & 0.01152                       & 36.1 s   \\ \hline
+$10^9$ & 0.19449  & 0.01823                       & 350 s    \\ \hline
+\end{tabular}
+\caption{Results from using brute force Monte Carlo method for for calculating the integral with an exact solution equal to $0.192766$}
+\end{table}
+The error in Monte Carlo methods scales with
+\begin{equation}
+error \sim \frac{1}{\sqrt{N}}.
+\end{equation}
+Looking at this we see that the error should decrease as N gets higher. In our case this does not occur for the brute force Monte Carlo method implemented which leads to the result produced to bee somewhat less valid.
+
+\subsection{Monte Carlo with importance sampling}
+
+The results from integration using Monte Carlo with importance sampling is shown in \textbf{Table 4}. The precision of this methods is far superior to the three others. With $N = 10^6$ its precision is already at the level of 3 leading digits and it takes only $0.4 s$. Gauss-Legendre do not reach this precision even for N = 30 and it takes nearly 2 minutes to reach a value vit relative error of 0.036. Gauss-Legendre reaches precision level of 3 leading digits but it takes 2 minutes and 5 seconds. The brute force Monte Carlo method is as said hard to compare to the other methods and needs a higher number for N to converge. For $N = 10^9$ the both Monte Carlo methods start to take quite some time to evaluate the integral. We see here that the error also decreases for a higher N which coincides with how the error (17) should scale.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|c|c|}
+\hline
+N                     & Integral & \multicolumn{1}{l|}{Variance} & Time(s)  \\ \hline
+$10^5$ & 0.19437  & 0.0082                        & 0.0433 s \\ \hline
+$10^6$ & 0.19298  & 0.00633                       & 0.4 s    \\ \hline
+$10^7$ & 0.19271  & 0.01058                       & 4.03 s   \\ \hline
+$10^8$ & 0.19279  & 0.00889                       & 39.8 s   \\ \hline
+$10^9$ & 0.19276  & 0.00876                       & 396 s    \\ \hline
+\end{tabular}
+\caption{Results from using the method Monte Carlo with importance sampling for calculating the integral with an exact solution equal to $0.192766$}
+\end{table}
+
+\section{Conclusion}
+It is clear that to the Monte Carlo with importance sampling is far superior to the other methods both in time and precision. The Monte Carlo with I.S. reaches a result with 3 digits precision in 0.4 seconds compared to Gauss-Laguerre which takes 2 minutes and 5 seconds.  suspect the brute force Monte Carlo method actually to converge faster than it did in this article and this may comes from some fault in my implementation. During the implementation of these methods there have not been used any unit tests. Due to the format of the research done the results from the methods them self can said to be a form of testing when we can compare them to the known exact value ($\frac{5\pi^2}{16^2}$) of the integral.
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+
+\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
+%A statement requiring citation \cite{Hjorth-Jensen:2015dg}.
+\bibitem[Hjorth-Jensen, 2015]{Hjorth-Jensen:2015dg}
+Hjort-Jensen, M. (2015).
+\newblock Computational Physics.
+\bibitem[Hjorth-Jensen]{Hjorth-Jensen}
+Hjort-Jensen, M.
+\newblock https://github.com/CompPhysics/ComputationalPhysics
+
+ 
+\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}

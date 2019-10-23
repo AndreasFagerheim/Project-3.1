@@ -1,0 +1,8 @@
+Exact value of integration: 0.192766
+
+Integrating using Monte Carlo i.s. with N samples
+------------------------------------------------------------
+Numerical value       variance         N      Time
+
+0.194373            0.008164    0.0438
+0.192976            0.006328     0.392
